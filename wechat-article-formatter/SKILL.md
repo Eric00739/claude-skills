@@ -4,98 +4,193 @@
 
 ## 设计特点
 
-- 暖米色纸张背景 + 浅黄褐色外底
-- 琥珀橙 (#d97706) 作为主色调，用于高亮、引用线、卡片标题等
-- 清晰的信息层级：标题/正文/引用块/卡片/列表/分隔线
-- 适配公众号编辑器限制：纯内联样式，宽度 670px
-- 在公众号编辑器中使用时只复制内容部分
+- 暖米色纸张背景 (#fffef8) + 浅褐外底 (#f5f0e8)
+- 琥珀橙 (#d97706) 作为主色调，金色 (#fcd34d) 作为点缀
+- 衬线字体 (Georgia/Songti) 增加质感
+- 小节编号 + 渐变分隔线
+- 微信兼容：不用 flexbox、border-radius
+- 宽度 680px
 
 ## 色板
 
-- 外底：#e8e4dc (浅灰褐)
-- 纸张：#fffef9 (暖白)
-- 正文：#2d2d2d
-- 标题：#1a1a1a
-- 主色/高亮：#d97706 (琥珀橙)
-- 高亮背景：#fef6f6 (浅暖粉)
-- 次级文字：#5c2a2a
-- 分隔线：#ddd
+| 元素 | 颜色 |
+|------|------|
+| 外底 | #f5f0e8 |
+| 纸张 | #fffef8 |
+| 正文 | #333333 |
+| 标题 | #1a1a1a |
+| 主色 | #d97706 |
+| 金色 | #fcd34d |
+| 引用背景 | #fff7ed |
+| 卡片背景 | #faf8f5 |
 
-## HTML 模板
+---
 
-使用时按以下模板替换内容，所有样式使用内联 style：
+## 必用元素
+
+### 顶部装饰条
 
 ```html
-<div style="background:#e8e4dc; padding:40px 20px; font-family:-apple-system,BlinkMacSystemFont,'Helvetica Neue','PingFang SC','Hiragino Sans GB','Microsoft YaHei',sans-serif;">
-<div style="background:#fffef9; max-width:670px; margin:0 auto; box-shadow:0 2px 20px rgba(0,0,0,0.1); padding:40px 30px 50px;">
+<div style="height:4px; background:linear-gradient(to right, #d97706, #f59e0b, #d97706);"></div>
+```
 
-  <!-- 大标题 -->
-  <div style="font-size:24px; line-height:1.5; color:#1a1a1a; font-weight:900; text-align:center; margin:20px 0 8px; letter-spacing:2px;">
-    文章标题
-  </div>
-  <div style="font-size:12px; line-height:1.6; color:#aaa; margin:0 0 30px; text-align:center; letter-spacing:3px;">
-    副标题/描述
-  </div>
+### 大标题
 
-  <!-- 正文段落 -->
-  <p style="font-size:16px; line-height:1.9; color:#2d2d2d; margin:16px 0; letter-spacing:0.2px; text-align:justify;">
-    段落内容。<span style="color:#d97706; font-weight:bold;">橙色高亮文字</span>
-  </p>
-
-  <!-- 分隔线 -->
-  <div style="text-align:center; font-size:14px; color:#ddd; letter-spacing:12px; margin:30px 0; user-select:none;">· · ·</div>
-
-  <!-- 引用块 -->
-  <div style="border-left:4px solid #d97706; padding:14px 18px; margin:24px 0; background:#fef6f6; border-radius:2px;">
-    <p style="font-size:15px; color:#5c2a2a; line-height:1.85; margin:0; font-style:italic;">引用文字</p>
-  </div>
-
-  <!-- 小节标题 -->
-  <div style="font-size:18px; line-height:1.5; color:#1a1a1a; font-weight:800; margin:28px 0 16px; text-align:center; letter-spacing:1px;">小节标题</div>
-
-  <!-- 卡片容器 -->
-  <div style="background:#fafaf9; border:1px solid #e7e5e4; border-radius:4px; padding:18px 20px; margin:24px 0;">
-    
-    <!-- 卡片标题 -->
-    <div style="font-size:16px; color:#1a1a1a; font-weight:700; text-align:center; margin:0 0 14px; padding-bottom:10px; border-bottom:2px solid #d97706;">卡片标题</div>
-    
-    <!-- 案例标题 -->
-    <div style="font-weight:700; color:#1a1a1a; font-size:16px; margin-bottom:10px;">案例：XXX</div>
-    
-    <!-- 编号行 -->
-    <div style="display:flex; align-items:baseline; margin:12px 0; line-height:1.8; font-size:15px;">
-      <span style="display:inline-block; width:20px; height:20px; line-height:20px; text-align:center; background:#d97706; color:#fff; font-size:12px; font-weight:700; border-radius:3px; margin-right:10px; flex-shrink:0;">1</span>
-      <span>内容</span>
-    </div>
-  </div>
-
-  <!-- 无序列表 -->
-  <ul style="font-size:15px; line-height:2; color:#2d2d2d; padding-left:20px; margin:12px 0; list-style:disc;">
-    <li><strong>加粗项</strong>：说明文字</li>
-  </ul>
-
-  <!-- 结尾 CTA -->
-  <div style="text-align:center; margin:30px 0 10px; padding:22px 18px; border-top:2px solid #d97706; border-bottom:2px solid #d97706; background:#fef6f6;">
-    <span style="font-size:12px; color:#ddd; letter-spacing:6px; margin-bottom:14px; display:block;">标 签</span>
-    <p style="font-size:15px; color:#5c2a2a; margin:6px 0; text-align:center;">内容</p>
-    <p style="font-size:18px; font-weight:800; color:#d97706; letter-spacing:2px; margin-top:10px;">金句</p>
-  </div>
-
-</div>
+```html
+<div style="font-size:26px; line-height:1.45; color:#1a1a1a; font-weight:700; text-align:center; margin:24px 0 12px; letter-spacing:0.5px;">
+  文章标题
 </div>
 ```
 
+### 副标题标签
+
+```html
+<div style="text-align:center; margin:0 0 8px;">
+  <span style="display:inline-block; font-size:11px; color:#d97706; letter-spacing:3px; padding:4px 16px; border:1px solid #d97706;">分类标签</span>
+</div>
+<div style="font-size:13px; color:#999; margin:0 0 36px; text-align:center; font-style:italic;">
+  描述/导语
+</div>
+```
+
+### 正文段落
+
+```html
+<p style="font-size:16px; line-height:2; color:#333; margin:18px 0; text-align:justify;">
+  段落内容。<span style="color:#d97706; font-weight:600;">高亮文字</span>
+</p>
+```
+
+### 分隔线（三点渐变）
+
+```html
+<div style="text-align:center; margin:44px 0;">
+  <span style="display:inline-block; width:8px; height:8px; background:#d97706; margin:0 6px;"></span>
+  <span style="display:inline-block; width:8px; height:8px; background:#d97706; opacity:0.5; margin:0 6px;"></span>
+  <span style="display:inline-block; width:8px; height:8px; background:#d97706; opacity:0.25; margin:0 6px;"></span>
+</div>
+```
+
+### 小节标题（带编号）
+
+```html
+<div style="margin:36px 0 20px;">
+  <div style="font-size:14px; color:#d97706; letter-spacing:2px; margin-bottom:8px;">01</div>
+  <div style="font-size:19px; color:#1a1a1a; font-weight:700; line-height:1.4;">
+    小节标题
+  </div>
+</div>
+```
+
+---
+
+## 可选元素
+
+### 引用块（带引号装饰）
+
+```html
+<div style="margin:28px 0; padding:24px 28px; background:linear-gradient(135deg, #fff7ed 0%, #fffbf5 100%); position:relative;">
+  <div style="position:absolute; top:12px; left:20px; font-size:48px; color:#d97706; opacity:0.2; font-family:Georgia,serif; line-height:1;">"</div>
+  <p style="font-size:17px; color:#78350f; line-height:1.9; margin:0; padding-left:24px; font-style:italic;">
+    引用文字
+  </p>
+</div>
+```
+
+### 金句块（深色反白）
+
+```html
+<div style="margin:28px 0; padding:20px 24px; background:#1a1a1a; text-align:center;">
+  <p style="font-size:16px; color:#fcd34d; line-height:1.8; margin:0; font-style:italic;">
+    金句内容
+  </p>
+</div>
+```
+
+### 信息卡片
+
+```html
+<div style="background:#faf8f5; padding:20px 24px; margin-bottom:12px; border-left:3px solid #d97706;">
+  <div style="font-size:14px; color:#d97706; font-weight:600; margin-bottom:6px;">卡片标题</div>
+  <div style="font-size:14px; color:#555; line-height:1.7;">卡片内容</div>
+</div>
+```
+
+### 故事块（案例展示）
+
+```html
+<div style="margin:32px 0; padding:0; position:relative;">
+  <div style="position:absolute; left:0; top:0; bottom:0; width:3px; background:linear-gradient(to bottom, #d97706, #fcd34d);"></div>
+  <div style="padding:24px 24px 24px 28px; background:#fefce8;">
+    <p style="font-size:13px; color:#92400e; margin:0 0 12px; font-weight:600; letter-spacing:1px;">真实案例</p>
+    <p style="font-size:15px; line-height:1.9; color:#444; margin:0 0 12px;">故事内容</p>
+    <p style="font-size:12px; color:#d97706; margin:16px 0 0; text-align:right;">—— 来源</p>
+  </div>
+</div>
+```
+
+### 解决方案卡片
+
+```html
+<div style="margin-bottom:16px; padding:20px 24px; background:#faf8f5;">
+  <div style="margin-bottom:10px;">
+    <span style="display:inline-block; width:24px; height:24px; line-height:24px; text-align:center; background:#d97706; color:#fff; font-size:13px; font-weight:700; margin-right:10px; vertical-align:middle;">1</span>
+    <strong style="font-size:16px; color:#1a1a1a;">标题</strong>
+  </div>
+  <p style="font-size:14px; line-height:1.8; color:#555; margin:0; padding-left:34px;">
+    说明内容
+  </p>
+</div>
+```
+
+### 代码块
+
+```html
+<div style="margin:12px 0; padding:12px 16px; background:#292524; color:#fcd34d; font-family:Consolas,Monaco,monospace; font-size:14px;">
+  /context list
+</div>
+```
+
+### 行内代码
+
+```html
+<span style="padding:2px 6px; background:#f5f0e6; color:#d97706; font-family:Consolas,Monaco,monospace; font-size:14px;">/context list</span>
+```
+
+### 结尾标记
+
+```html
+<div style="text-align:center; margin:48px 0 0; padding-top:32px; border-top:1px solid #e8e0d4;">
+  <div style="font-size:14px; color:#999; letter-spacing:6px;">— 完 —</div>
+</div>
+```
+
+### 底部装饰条
+
+```html
+<div style="height:4px; background:linear-gradient(to right, #d97706, #f59e0b, #d97706);"></div>
+```
+
+---
+
+## 微信兼容要点
+
+| 问题 | 解决方案 |
+|------|----------|
+| 不支持 flexbox | 用 inline-block + vertical-align |
+| 不支持 border-radius | 不用圆角 |
+| 渐变背景 | 用 linear-gradient 可以 |
+| 分隔点 | 用 span + inline-block 实现 |
+| 字体 | Georgia/Songti SC 衬线字体 |
+
+---
+
 ## 使用步骤
 
-1. 根据上面的模板，把文章内容套用对应的 HTML 结构
-2. 确保所有文字用 `style` 内联（公众号不支持外部 CSS 文件）
-3. 在公众号编辑器中切换到"HTML 源码"模式
-4. 将完整 HTML 粘贴进去
-5. 切换回编辑模式即可看到效果
-
-## 注意事项
-
-- 公众号图片需用公众号自带图片上传功能，不能用外部链接
-- 所有文字字号不要小于 14px，否则手机上阅读困难
-- 段落之间保持 16px margin
-- 高亮色统一使用 `#d97706`（琥珀橙）
+1. 用顶部装饰条开始
+2. 标题 + 副标题标签
+3. 正文段落（行高 2.0）
+4. 小节用编号标题 + 分隔线
+5. 引用/卡片/故事块按需使用
+6. 结尾标记 + 底部装饰条
+7. 在公众号编辑器切换 HTML 源码模式粘贴
