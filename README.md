@@ -4,6 +4,19 @@
 
 ## Skills 列表
 
+### khazix-writer
+
+数字生命卡兹克开源的公众号长文写作 Skill，包含完整的写作风格规则、四层自检体系、内容方法论和风格示例库。
+
+**使用方法：**
+```bash
+# 安装到本地
+mkdir -p ~/.claude/skills/khazix-writer
+cp khazix-writer/SKILL.md ~/.claude/skills/khazix-writer/
+```
+
+然后在 Claude Code 中输入 `/khazix-writer` 即可触发。
+
 ### wechat-article-formatter
 
 将文章排版为微信公众号可用的 HTML 格式。
