@@ -1,0 +1,36 @@
+name: qwen3-forced-aligner
+description: |
+  Qwen3 Forced Aligner - 语音文本强制对齐工具
+
+  使用 Qwen3-ForcedAligner-0.6B 模型对音频和文本进行精确对齐，
+  生成词级和字符级时间戳。支持 11 种语言。
+
+  使用方式:
+    /qwen3-forced-aligner <audio_file> --text "要对齐的文本" --language Chinese
+
+version: 1.0.0
+entry: align.py
+args:
+  - name: audio
+    type: string
+    required: true
+    description: 音频文件路径
+  - name: text
+    type: string
+    required: true
+    description: 要对齐的文本
+  - name: language
+    type: string
+    default: Chinese
+    description: 语言（Chinese, English, Cantonese, French, German, Italian, Japanese, Korean, Portuguese, Russian, Spanish）
+  - name: output-format
+    type: string
+    default: json
+    description: 输出格式（json, txt, srt）
+  - name: output
+    type: string
+    required: false
+    description: 输出文件路径（默认 stdout）
+
+install: python install.py
+help: README.md
