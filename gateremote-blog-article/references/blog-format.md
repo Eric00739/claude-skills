@@ -50,11 +50,33 @@ The article template should keep the fixed reading-map behavior:
 ## Image Rules
 
 - Store article assets in `public/images/blog/<slug>/`.
+- Create that folder automatically for every new article. The user should not need to decide the destination.
+- Before asking for image paths, run `scripts/collect-blog-images.mjs` from the skill to scan recent Downloads, Desktop, and WeChat temp images, then convert the selected images into the article folder.
 - Convert user-provided PNG/JPG to WebP before publishing.
 - Prefer 16:9 images for article visuals.
 - Keep original aspect ratio; do not crop in a way that distorts labels, instruments, boards, or remote controls.
 - Use descriptive alt text such as `433 MHz transmitter module with crystal oscillator and matching circuit`.
 - Do not upload raw preview images unless explicitly requested.
+
+## Image Collector
+
+Use this pattern from the website repo root:
+
+```bash
+node ~/.codex/skills/gateremote-blog-article/scripts/collect-blog-images.mjs \
+  --slug rf-remote-control-concurrency-anti-collision \
+  --count 4 \
+  --names shared-rf-channel,collision-scenarios,anti-collision-techniques,rf-system-evolution
+```
+
+Useful options:
+
+- `--images path1,path2`: use explicit source files first.
+- `--sources dir1,dir2`: scan specific directories.
+- `--sinceMinutes 240`: adjust the recent-file search window.
+- `--dry-run`: list candidates without writing files.
+
+After conversion, use `view_image` or a browser check to confirm the selected WebP files match the intended article sections.
 
 ## Verification
 

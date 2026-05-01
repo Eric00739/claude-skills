@@ -16,10 +16,22 @@ For the detailed house format, read `references/blog-format.md` before editing a
 1. Read the repo first. Confirm current blog data shape in `src/data/blog.ts`, article page template in `src/app/[locale]/blog/[slug]/page.tsx`, and shared components such as `AuthorBio` and `BlogCommentBox`.
 2. Preserve the user's article meaning. Edit structure, headings, rhythm, and image placement, but do not invent technical claims, test results, certifications, customer stories, or product specs.
 3. Create or update one article entry in `src/data/blog.ts`. Use a clean SEO slug, real date, category, excerpt, read time, hero image, author, and structured `content` blocks.
-4. Place article images under `public/images/blog/<slug>/`. Convert originals to compressed WebP, preserve aspect ratio, and reference them from content blocks.
-5. Keep the article page template fixed: compact hero, readable article column, responsive reading map, comments box after the article body, author bio after comments, and final CTA.
-6. Verify with `npm run lint` and `npm run build`. For visual changes, inspect desktop and mobile widths in the browser and check for horizontal overflow.
-7. Stage only relevant article/code/image files. Do not include previews, raw source images, screenshots, or unrelated untracked assets unless the user explicitly asks.
+4. Place article images under `public/images/blog/<slug>/`. Do this automatically; do not ask the user where images should go.
+5. Run the bundled image collector when image files are not already in the article folder. From the website repo root:
+   `node ~/.codex/skills/gateremote-blog-article/scripts/collect-blog-images.mjs --slug <slug> --count <n> --names hero,section-one,section-two`
+6. Convert originals to compressed WebP, preserve aspect ratio, and reference the final WebP paths from content blocks.
+7. Keep the article page template fixed: compact hero, readable article column, responsive reading map, comments box after the article body, author bio after comments, and final CTA.
+8. Verify with `npm run lint` and `npm run build`. For visual changes, inspect desktop and mobile widths in the browser and check for horizontal overflow.
+9. Stage only relevant article/code/image files. Do not include previews, raw source images, screenshots, or unrelated untracked assets unless the user explicitly asks.
+
+## Image Intake Automation
+
+- Always create `public/images/blog/<slug>/` first.
+- If the user provides explicit image paths, pass them to the collector with `--images path1,path2`.
+- If images were pasted, downloaded, or sent through WeChat without clean paths, run the collector before asking for help. It scans recent files from Downloads, Desktop, and WeChat temp folders, prioritizing `InputTemp` and `RWTemp`.
+- Use semantic output names that match the article structure, such as `shared-rf-channel`, `collision-scenarios`, `anti-collision-techniques`, and `rf-system-evolution`.
+- If the collector finds more candidates than needed, use the most recent relevant files and verify dimensions/content with `view_image` when necessary.
+- Ask for image paths only after the automated scan finds no usable local images or finds unrelated files only.
 
 ## Fixed Page Rules
 
