@@ -35,3 +35,20 @@ cp wechat-article-formatter/SKILL.md ~/.claude/skills/wechat-article-formatter/
 ```
 
 然后在 Claude Code 中输入 `/wechat-article-formatter` 即可触发。
+
+### gateremote-blog-article
+
+GateRemoteSource 博客文章发布 Skill。用于把 Eric Huang 的 RF remote controls 文章草稿、图片和松散笔记整理成固定的网站 blog 格式，包含文章结构、WebP 图片规范、作者简介、评论区、阅读目录和发布检查流程。
+
+**使用方法：**
+```bash
+# Claude Code
+mkdir -p ~/.claude/skills/gateremote-blog-article
+cp -R gateremote-blog-article/* ~/.claude/skills/gateremote-blog-article/
+
+# Codex
+mkdir -p ~/.codex/skills/gateremote-blog-article
+cp -R gateremote-blog-article/* ~/.codex/skills/gateremote-blog-article/
+```
+
+然后输入 `用 gateremote-blog-article 处理这篇文章` 即可触发。

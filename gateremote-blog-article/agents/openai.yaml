@@ -1,0 +1,4 @@
+interface:
+  display_name: "GateRemote Blog Article"
+  short_description: "Standardize GateRemote blog articles"
+  default_prompt: "Use $gateremote-blog-article to turn my draft into a publish-ready GateRemote blog article."
