@@ -1,4 +1,7 @@
+import contextlib
+import io
 import importlib.util
+import json
 import shutil
 import subprocess
 import sys
@@ -8,7 +11,7 @@ from pathlib import Path
 
 
 ROOT = Path(__file__).resolve().parents[1]
-SKILL = ROOT / "Tutor_Plus"
+SKILL = ROOT / "tutor-plus"
 
 
 def load_module(path: Path, name: str):
@@ -20,6 +23,90 @@ def load_module(path: Path, name: str):
 
 
 class TutorPlusTests(unittest.TestCase):
+    def test_skill_folder_and_frontmatter_use_hyphen_case_name(self):
+        self.assertTrue(SKILL.exists())
+        skill_text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        self.assertIn("name: tutor-plus", skill_text)
+
+
+    def test_generate_tts_defaults_to_warm_slow_female_teacher_voice(self):
+        module = load_module(SKILL / "scripts" / "generate_tts.py", "tutor_plus_generate_tts_defaults")
+
+        args = module.parse_cli_args(["audio_list.csv"])
+
+        self.assertEqual(args.voice, "xiaoxiao")
+        self.assertEqual(args.rate, "-8%")
+        self.assertEqual(args.volume, "+0%")
+        self.assertEqual(args.pitch, "+0Hz")
+
+
+    def test_generate_tts_cli_accepts_rate_option_and_help(self):
+        module = load_module(SKILL / "scripts" / "generate_tts.py", "tutor_plus_generate_tts_cli")
+
+        args = module.parse_cli_args(["audio_list.csv", "./audio", "--rate", "-8%"])
+
+        self.assertEqual(args.rate, "-8%")
+        with contextlib.redirect_stdout(io.StringIO()):
+            with self.assertRaises(SystemExit) as exit_context:
+                module.parse_cli_args(["--help"])
+        self.assertEqual(exit_context.exception.code, 0)
+
+
+    def test_generate_all_records_tts_style_parameters(self):
+        module = load_module(SKILL / "scripts" / "generate_tts.py", "tutor_plus_generate_tts_manifest")
+        calls = []
+
+        async def fake_generate_audio(text, output_path, voice="xiaoxiao", rate="-8%", volume="+0%", pitch="+0Hz"):
+            calls.append(
+                {
+                    "text": text,
+                    "output_path": str(output_path),
+                    "voice": voice,
+                    "rate": rate,
+                    "volume": volume,
+                    "pitch": pitch,
+                }
+            )
+            Path(output_path).write_bytes(b"fake audio")
+            return True, 3.21
+
+        module.generate_audio = fake_generate_audio
+
+        with tempfile.TemporaryDirectory() as tmp:
+            csv_path = Path(tmp) / "audio_list.csv"
+            audio_dir = Path(tmp) / "audio"
+            csv_path.write_text(
+                'filename,text\n'
+                'audio_001_开场.wav,"我们先看看题目里告诉了什么。"\n',
+                encoding="utf-8",
+            )
+
+            success = module.asyncio.run(module.generate_all(csv_path, audio_dir))
+            manifest = json.loads((audio_dir / "audio_info.json").read_text(encoding="utf-8"))
+
+        self.assertTrue(success)
+        self.assertEqual(calls[0]["voice"], "xiaoxiao")
+        self.assertEqual(calls[0]["rate"], "-8%")
+        self.assertEqual(calls[0]["volume"], "+0%")
+        self.assertEqual(calls[0]["pitch"], "+0Hz")
+        self.assertEqual(manifest["voice"], "xiaoxiao")
+        self.assertEqual(manifest["rate"], "-8%")
+        self.assertEqual(manifest["volume"], "+0%")
+        self.assertEqual(manifest["pitch"], "+0Hz")
+
+
+    def test_skill_references_child_friendly_narration_guidance(self):
+        skill_text = (SKILL / "SKILL.md").read_text(encoding="utf-8")
+        reference_path = SKILL / "references" / "narration_style.md"
+
+        self.assertTrue(reference_path.exists())
+        reference_text = reference_path.read_text(encoding="utf-8")
+        self.assertIn("references/narration_style.md", skill_text)
+        self.assertIn("亲和女老师", reference_text)
+        self.assertIn("小学生", reference_text)
+        self.assertIn("不要", reference_text)
+
+
     def test_generate_tts_parses_storyboard_audio_table(self):
         module = load_module(SKILL / "scripts" / "generate_tts.py", "tutor_plus_generate_tts")
         with tempfile.TemporaryDirectory() as tmp:

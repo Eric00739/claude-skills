@@ -1,10 +1,11 @@
-# Tutor_Plus - 数学教学视频制作
+# tutor-plus - 数学教学视频制作
 
-Tutor_Plus 用于把数学题处理成 HTML/SVG 讲解资料、分镜脚本、TTS 配音和 Manim 教学视频。
+tutor-plus 用于把数学题处理成 HTML/SVG 讲解资料、分镜脚本、TTS 配音和 Manim 教学视频。
 
 ## 主要改进
 
 - `generate_tts.py` 同时支持 `audio_list.csv` 和分镜 Markdown 的"音频生成清单"。
+- TTS 默认使用 `xiaoxiao` 女声和 `-8%` 慢速，更接近亲和女老师讲给小学生听的语气。
 - `init.py` 会把 `scripts/`、`requirements.txt` 和脚手架一起复制到新项目，初始化后可直接运行。
 - `check.py` 与 `script_scaffold.py` 保持一致，不再要求不存在的 `Subtitle` / `TitleSubtitle` 类。
 - 脚手架默认通过 `add_scene_audio()` 添加音频，避免无声视频。
@@ -23,7 +24,8 @@ uv pip install -r requirements.txt
 
 # 生成配音，支持 CSV 或分镜 Markdown
 python scripts/generate_tts.py audio_list.csv ./audio
-python scripts/generate_tts.py 分镜.md ./audio --voice xiaoxiao
+python scripts/generate_tts.py 分镜.md ./audio
+python scripts/generate_tts.py 分镜.md ./audio --voice xiaoxiao --rate -8%
 
 # 验证音频并回填分镜时长
 python scripts/validate_audio.py 分镜.md ./audio
@@ -35,9 +37,9 @@ python scripts/render.py -f script.py -s MathScene -q h --no-preview
 
 ## 目录说明
 
-- `SKILL.md` - Tutor_Plus 工作流和使用规则
+- `SKILL.md` - tutor-plus 工作流和使用规则
 - `init.py` - 新项目初始化脚本
 - `scripts/` - TTS、音频验证、代码检查、渲染和关键帧抽取脚本
 - `templates/` - Manim 脚手架和示例
-- `references/` - 分镜参考
+- `references/` - 分镜和读白风格参考
 - `sample/` - 旧版完整示例，仅作参考

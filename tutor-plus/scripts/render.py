@@ -47,7 +47,7 @@ class RenderPipeline:
         self.preview = preview
         self.skip_check = skip_check
 
-        # 以当前 Tutor_Plus 项目目录为工作目录。
+        # 以当前 tutor-plus 项目目录为工作目录。
         # init.py 会把 scripts/render.py 复制到项目内，因此 parent.parent 就是项目根目录。
         self.project_dir = Path(__file__).resolve().parent.parent
         self.script_dir = self.project_dir  # 向后兼容旧变量名

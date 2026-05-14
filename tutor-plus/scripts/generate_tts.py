@@ -4,21 +4,22 @@ TTS 生成脚本
 
 功能：
 - 从 CSV 文件或分镜 Markdown 的"音频生成清单"读取对白列表
-- 使用 Edge TTS (xiaoxiao 语音) 生成音频
+- 使用 Edge TTS 生成音频，默认 xiaoxiao 女声、-8% 慢速讲解
 - 输出到指定目录
 - 生成 audio_info.json 供验证脚本使用
 
 CSV 格式：
     filename,text
-    audio_001_开场.wav,"大家好，今天我们来学习..."
-    audio_002_介绍.wav,"首先，让我们来看这个图形..."
+    audio_001_开场.wav,"我们先看看题目里告诉了什么。"
+    audio_002_介绍.wav,"你发现了吗？图里这个量发生了变化。"
 
 使用：
-    python generate_tts.py audio_list.csv ./audio --voice xiaoxiao
-    python generate_tts.py 分镜.md ./audio --voice xiaoxiao
+    python generate_tts.py audio_list.csv ./audio
+    python generate_tts.py 分镜.md ./audio
+    python generate_tts.py 分镜.md ./audio --voice xiaoxiao --rate -8%
 
 支持的声音：
-    xiaoxiao (晓晓，女声，默认)
+    xiaoxiao (晓晓，女声，默认，适合亲和老师语气)
     xiaoyi (晓伊，女声)
     yunyang (云扬，男声)
     yunjian (云健，男声)
@@ -29,6 +30,7 @@ import os
 import csv
 import json
 import asyncio
+import argparse
 from pathlib import Path
 
 # 声音映射表
@@ -41,8 +43,61 @@ VOICE_MAP = {
     'xiaoxiao-multilingual': 'zh-CN-XiaoxiaoMultilingualNeural',
 }
 
+DEFAULT_VOICE = "xiaoxiao"
+DEFAULT_RATE = "-8%"
+DEFAULT_VOLUME = "+0%"
+DEFAULT_PITCH = "+0Hz"
 
-async def generate_audio(text, output_path, voice='xiaoxiao'):
+
+def format_default_for_help(value):
+    """argparse 使用 % 格式化 help 文本，默认值里的百分号需要转义。"""
+    return value.replace("%", "%%")
+
+
+def normalize_cli_tts_options(argv):
+    """
+    支持 `--rate -8%` 这种自然写法。
+
+    argparse 会把 -8% 误判为新选项，所以在解析前转成 `--rate=-8%`。
+    """
+    options_allowing_dash_values = {"--rate", "--volume", "--pitch"}
+    normalized = []
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg in options_allowing_dash_values and i + 1 < len(argv):
+            value = argv[i + 1]
+            if value.startswith("-") and not value.startswith("--"):
+                normalized.append(f"{arg}={value}")
+                i += 2
+                continue
+        normalized.append(arg)
+        i += 1
+    return normalized
+
+
+def parse_cli_args(argv):
+    """解析命令行参数，默认使用适合小学生教学视频的亲和女声慢速配置。"""
+    argv = normalize_cli_tts_options(list(argv))
+    parser = argparse.ArgumentParser(
+        description="从 CSV 或分镜 Markdown 生成 Edge TTS 配音音频",
+        formatter_class=argparse.RawTextHelpFormatter,
+    )
+    parser.add_argument("input_file", help="CSV 文件路径，或包含音频生成清单的分镜 Markdown")
+    parser.add_argument("output_dir", nargs="?", default="./audio", help="输出目录（默认：./audio）")
+    parser.add_argument("--voice", default=DEFAULT_VOICE, choices=sorted(VOICE_MAP.keys()),
+                        help=f"声音选择（默认：{DEFAULT_VOICE}，亲和女声）")
+    parser.add_argument("--rate", default=DEFAULT_RATE,
+                        help=f"语速调整（默认：{format_default_for_help(DEFAULT_RATE)}，更适合小学生听清）")
+    parser.add_argument("--volume", default=DEFAULT_VOLUME,
+                        help=f"音量调整（默认：{format_default_for_help(DEFAULT_VOLUME)}）")
+    parser.add_argument("--pitch", default=DEFAULT_PITCH,
+                        help=f"音高调整（默认：{DEFAULT_PITCH}）")
+    return parser.parse_args(argv)
+
+
+async def generate_audio(text, output_path, voice=DEFAULT_VOICE, rate=DEFAULT_RATE,
+                         volume=DEFAULT_VOLUME, pitch=DEFAULT_PITCH):
     """
     生成单条音频
 
@@ -50,11 +105,14 @@ async def generate_audio(text, output_path, voice='xiaoxiao'):
         text: 文本内容
         output_path: 输出文件路径
         voice: 声音名称
+        rate: 语速，例如 -8%
+        volume: 音量，例如 +0%
+        pitch: 音高，例如 +0Hz
 
     返回:
         (success, duration)
     """
-    voice_id = VOICE_MAP.get(voice, VOICE_MAP['xiaoxiao'])
+    voice_id = VOICE_MAP.get(voice, VOICE_MAP[DEFAULT_VOICE])
 
     try:
         try:
@@ -64,7 +122,7 @@ async def generate_audio(text, output_path, voice='xiaoxiao'):
             print("请运行: uv pip install edge-tts")
             return False, 0
 
-        communicate = edge_tts.Communicate(text, voice_id)
+        communicate = edge_tts.Communicate(text, voice_id, rate=rate, volume=volume, pitch=pitch)
         await communicate.save(output_path)
 
         # 获取时长
@@ -216,7 +274,8 @@ def parse_input_file(input_path):
     return parse_csv(input_path)
 
 
-async def generate_all(input_path, output_dir, voice='xiaoxiao'):
+async def generate_all(input_path, output_dir, voice=DEFAULT_VOICE, rate=DEFAULT_RATE,
+                       volume=DEFAULT_VOLUME, pitch=DEFAULT_PITCH):
     """批量生成音频"""
     # 解析 CSV 或分镜 Markdown
     entries = parse_input_file(input_path)
@@ -230,7 +289,7 @@ async def generate_all(input_path, output_dir, voice='xiaoxiao'):
     results = []
     total = len(entries)
 
-    print(f"\n开始生成音频 (声音: {voice})...")
+    print(f"\n开始生成音频 (声音: {voice}, 语速: {rate}, 音量: {volume}, 音高: {pitch})...")
     print("="*50)
 
     for i, entry in enumerate(entries, 1):
@@ -246,7 +305,7 @@ async def generate_all(input_path, output_dir, voice='xiaoxiao'):
         print(f"[{i}/{total}] {filename}")
         print(f"    文本: {text[:50]}{'...' if len(text) > 50 else ''}")
 
-        success, duration = await generate_audio(text, output_path, voice)
+        success, duration = await generate_audio(text, output_path, voice, rate, volume, pitch)
 
         if success:
             # 从文件名提取幕号
@@ -269,7 +328,10 @@ async def generate_all(input_path, output_dir, voice='xiaoxiao'):
             'files': results,
             'total_duration': sum(r['duration'] for r in results),
             'count': len(results),
-            'voice': voice
+            'voice': voice,
+            'rate': rate,
+            'volume': volume,
+            'pitch': pitch
         }
 
         info_path = os.path.join(output_dir, 'audio_info.json')
@@ -292,34 +354,9 @@ def extract_scene_number(filename):
 
 
 def main():
-    if len(sys.argv) < 2:
-        print("Usage: python generate_tts.py <audio_list.csv|分镜.md> [output_dir] [options]")
-        print("")
-        print("参数:")
-        print("  input_file    CSV 文件路径，或包含音频生成清单的分镜 Markdown")
-        print("  output_dir    输出目录 (默认: ./audio)")
-        print("")
-        print("选项:")
-        print("  --voice VOICE 声音选择 (默认: xiaoxiao)")
-        print("")
-        print("可用声音:")
-        for k, v in VOICE_MAP.items():
-            print(f"  {k:20s} - {v}")
-        print("")
-        print("示例:")
-        print("  python generate_tts.py audio_list.csv ./audio")
-        print("  python generate_tts.py 分镜.md ./audio --voice xiaoxiao")
-        print("  python generate_tts.py audio_list.csv ./audio --voice yunyang")
-        sys.exit(1)
-
-    input_path = sys.argv[1]
-    output_dir = sys.argv[2] if len(sys.argv) > 2 and not sys.argv[2].startswith('--') else "./audio"
-
-    # 解析选项
-    voice = 'xiaoxiao'
-    for i, arg in enumerate(sys.argv):
-        if arg == '--voice' and i + 1 < len(sys.argv):
-            voice = sys.argv[i + 1]
+    args = parse_cli_args(sys.argv[1:])
+    input_path = args.input_file
+    output_dir = args.output_dir
 
     # 检查文件
     if not os.path.exists(input_path):
@@ -328,11 +365,12 @@ def main():
 
     print(f"输入文件: {input_path}")
     print(f"输出目录: {output_dir}")
-    print(f"使用声音: {voice}")
+    print(f"使用声音: {args.voice}")
+    print(f"语速/音量/音高: {args.rate} / {args.volume} / {args.pitch}")
     print("")
 
     # 运行
-    success = asyncio.run(generate_all(input_path, output_dir, voice))
+    success = asyncio.run(generate_all(input_path, output_dir, args.voice, args.rate, args.volume, args.pitch))
 
     if success:
         print("\n✅ 全部生成成功！")

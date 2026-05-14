@@ -176,7 +176,7 @@ def copy_templates(project_dir):
 
 
 def copy_runtime_files(project_dir):
-    """拷贝运行 Tutor_Plus 项目所需的脚本和依赖清单。"""
+    """拷贝运行 tutor-plus 项目所需的脚本和依赖清单。"""
     print("=" * 50)
     print("拷贝运行脚本")
     print("=" * 50)
@@ -212,12 +212,12 @@ def generate_csv_template(project_dir):
     csv_path = project_path / "audio_list.csv"
 
     csv_content = """filename,text
-audio_001_开场.wav,"大家好！今天我们来学习三角形内角和定理。"
-audio_002_画三角形.wav,"首先，让我们画一个任意三角形。"
-audio_003_标角度.wav,"标记三角形的三个内角。"
-audio_004_画平行线.wav,"过顶点作底边的平行线。"
-audio_005_证明.wav,"利用平行线性质进行证明。"
-audio_006_总结.wav,"总结：三角形内角和等于180度。"
+audio_001_开场.wav,"我们先看看这道题想让我们知道什么。"
+audio_002_画三角形.wav,"先画一个三角形，把三个角找出来。"
+audio_003_标角度.wav,"这三个角就是今天要一起观察的主角。"
+audio_004_画平行线.wav,"接下来加一条辅助线，看看角的位置发生了什么变化。"
+audio_005_证明.wav,"现在一步一步对应起来，看哪些角其实一样大。"
+audio_006_总结.wav,"所以三个内角合起来，正好是一条直线的 180 度。"
 """
 
     if not csv_path.exists():
@@ -302,6 +302,7 @@ def main():
     print("下一步:")
     print("  1. 编辑 audio_list.csv 填写对白")
     print("  2. 生成音频: python scripts/generate_tts.py audio_list.csv ./audio")
+    print("     默认使用 xiaoxiao 女声和 -8% 慢速讲解")
     print("  3. 编辑 script.py 实现动画")
     print("  4. 渲染视频: python scripts/render.py")
     print()
