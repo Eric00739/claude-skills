@@ -1,0 +1,4 @@
+interface:
+  display_name: "tutor-plus"
+  short_description: "Build child-friendly math tutoring explainers and Manim videos"
+  default_prompt: "Use $tutor-plus to solve this math problem, create a child-friendly visual explanation, and produce a naturally narrated Manim video workflow."

@@ -52,3 +52,20 @@ cp -R gateremote-blog-article/* ~/.codex/skills/gateremote-blog-article/
 ```
 
 然后输入 `用 gateremote-blog-article 处理这篇文章` 即可触发。
+
+### tutor-plus
+
+数学一对一辅导与教学视频制作 Skill。用于解答数学题、生成 HTML/SVG 讲解资料、规划分镜、生成 TTS 配音，并把分镜实现为带音频的 Manim 教学视频。
+
+**使用方法：**
+```bash
+# Claude Code
+mkdir -p ~/.claude/skills/tutor-plus
+cp -R tutor-plus/* ~/.claude/skills/tutor-plus/
+
+# Codex
+mkdir -p ~/.codex/skills/tutor-plus
+cp -R tutor-plus/* ~/.codex/skills/tutor-plus/
+```
+
+然后输入 `用 tutor-plus 处理这道数学题并生成教学视频` 即可触发。
