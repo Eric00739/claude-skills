@@ -52,3 +52,29 @@ cp -R gateremote-blog-article/* ~/.codex/skills/gateremote-blog-article/
 ```
 
 然后输入 `用 gateremote-blog-article 处理这篇文章` 即可触发。
+
+### de-AI-writing
+
+中文写作、改写、润色、翻译和审阅的去 AI 味技能。在 good-writing 作者文风底座上做保真修补，清除路标词、二分对照壳、讲义腔、AI 隐喻、伪口语化和模板结构。
+
+**支持任务类型：** 从零写、改写、翻译（保结构）、审稿、润色
+
+**使用方法：**
+```bash
+mkdir -p ~/.claude/skills/de-AI-writing
+cp -R de-AI-writing/* ~/.claude/skills/de-AI-writing/
+```
+
+然后在 Claude Code 中输入 `/de-AI-writing` 即可触发。
+
+### good-writing
+
+作者文风复现引擎。从真实作者文章中提取写作 DNA，提供半文半白、长短句节奏、类比先行等风格约束。
+
+**使用方法：**
+```bash
+mkdir -p ~/.claude/skills/good-writing
+cp -R good-writing/* ~/.claude/skills/good-writing/
+```
+
+然后在 Claude Code 中输入 `/good-writing` 即可触发。
